@@ -1,0 +1,41 @@
+load("@rules_rust//rust:defs.bzl", "rust_doc", "rust_doc_test", "rust_library", "rust_test")
+
+constraint_setting(
+    name = "alternate_constraint",
+    default_constraint_value = "alternate_off",
+)
+
+constraint_value(
+    name = "alternate_on",
+    constraint_setting = "alternate_constraint",
+)
+
+constraint_value(
+    name = "alternate_off",
+    constraint_setting = "alternate_constraint",
+)
+
+platform(
+    name = "main",
+    parents = ["@local_config_platform//:host"],
+)
+
+platform(
+    name = "alternate",
+    constraint_values = [
+        "//:alternate_on"
+    ],
+    parents = [":main"],
+)
+
+rust_library(
+    name = "same",
+    srcs = ["src/lib.rs"],
+    edition = "2021",
+)
+
+rust_test(
+    name = "same_test",
+    exec_compatible_with = [":alternate_on"],
+    crate = ":same",
+)
